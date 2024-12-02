@@ -6,6 +6,7 @@ from IPython.display import display
 import numpy as np
 import os
 import logging
+import subprocess
 
 class DataCleaner:
     def __init__(self, rawdata_file_path, variable_file, batch_size=90000, start_row=0, progress_file="progress.json"):
@@ -335,7 +336,7 @@ class DataCleaner:
         # Rule 1: When Student = 1, age must be 1, and Economic_Activity must be '4'
         
         drop_data1 = batch[(batch['student'] == 1) & ~((batch['age'] == 1) | (batch['economic_activity'] == '4'))]
-        logging.info(f"llllllllllll {(drop_data1)}")
+        logging.info(f"{(drop_data1)}")
         
         if not drop_data1.empty:
             drop_data = pd.concat([drop_data, drop_data1])
@@ -435,6 +436,69 @@ class DataCleaner:
             logging.error(f"Unexpected error loading progress: {e}. Starting from the beginning.")
             self.start_row = 0  # 出现其他错误时从头开始
 
+    # def process_in_batches(self):
+    #     """逐批处理 CSV 文件以检查缺失值并清理数据"""
+    #     batch_number = 1
+    #     rows_to_drop = pd.DataFrame()
+
+    #     # 获取文件总行数
+    #     total_rows = sum(1 for line in open(self.rawdata_file_path))  # 获取文件行数
+    #     logging.info(f"Total rows in file: {total_rows}")
+
+    #     # 确保start_row初始化，如果没有初始化在__init__中
+    #     if not hasattr(self, 'start_row'):
+    #         self.start_row = 0
+
+    #     # 如果 start_row 已经等于文件的总行数，直接跳过处理
+    #     if self.start_row >= total_rows:
+    #         logging.info("No new data to process. All data has already been processed.")
+    #         return rows_to_drop  # 返回空的数据帧，表示没有要删除的行
+
+    #     # 逐批读取并处理数据
+    #     # for batch in pd.read_csv(self.rawdata_file_path, chunksize=self.batch_size):
+    #     for batch in pd.read_csv(self.rawdata_file_path, chunksize=self.batch_size, skiprows=self.start_row):
+    #         logging.info(f"\nProcessing batch {batch_number}...")
+
+    #         # Reset index of the batch before processing
+    #         batch = batch.reset_index(drop=True)
+
+    #         # 1. 检查缺失值
+    #         missing_rows = self.check_missing_values(batch)
+    #         rows_to_drop = pd.concat([rows_to_drop, missing_rows])
+    
+    #         # 2. 检查重复行
+    #         duplicate_rows = self.check_duplicate_rows(batch)
+    #         rows_to_drop = pd.concat([rows_to_drop, duplicate_rows])
+    
+    #         # 3. 逻辑验证
+    #         invalid_rows = self.logical_validation(batch)
+    #         rows_to_drop = pd.concat([rows_to_drop, invalid_rows])
+
+    #         # 检查缺失值并标记要删除的行
+    #         # missing_rows = self.check_duplicate_rows(batch)
+    #         # rows_to_drop = pd.concat([rows_to_drop, missing_rows])
+
+            
+    #         # 调用 process_batch 处理当前批次
+    #         # cleaned_batch = self.process_batch(batch)
+            
+    #         # 对每批数据进行逻辑验证，找出要删除的行
+    #         # drop_data = self.logical_validation(cleaned_batch)
+    #         # rows_to_drop = pd.concat([rows_to_drop, drop_data])
+
+    #         # 更新进度
+    #         self.start_row += len(batch)
+    #         self.save_progress()
+
+    #         batch_number += 1
+
+    #     # 合并所有要删除的数据
+    #     # logging.info(f"Total rows dropped: {len(rows_to_drop)}")
+    #     # logging.info(f"Total rows processed: {self.start_row}")
+    #     logging.info(f"Total rows perpared to dropped: {len(rows_to_drop)}")
+    #     logging.info(f"Total rows perpared to processed: {self.start_row}")
+    #     return rows_to_drop
+
     def process_in_batches(self):
         """逐批处理 CSV 文件以检查缺失值并清理数据"""
         batch_number = 1
@@ -461,16 +525,10 @@ class DataCleaner:
             # Reset index of the batch before processing
             batch = batch.reset_index(drop=True)
 
-            # 检查缺失值并标记要删除的行
-            missing_rows = self.check_duplicate_rows(batch)
-            rows_to_drop = pd.concat([rows_to_drop, missing_rows])
             
             # 调用 process_batch 处理当前批次
             cleaned_batch = self.process_batch(batch)
             
-            # 对每批数据进行逻辑验证，找出要删除的行
-            drop_data = self.logical_validation(cleaned_batch)
-            rows_to_drop = pd.concat([rows_to_drop, drop_data])
 
             # 更新进度
             self.start_row += len(batch)
@@ -490,66 +548,66 @@ class DataCleaner:
         """执行数据清理并保存结果"""
         logging.info("Starting data cleaning process...")
         batch_number = 1  # 批次编号
-
-        rows_to_drop = pd.DataFrame()  # 用于存储所有需要丢弃的行
-
-
+    
+        rows_to_drop_indices = set()  # 用于存储所有需要丢弃的行索引
+    
+        # 逐批读取并处理数据
         for batch in pd.read_csv(self.rawdata_file_path, chunksize=self.batch_size, skiprows=self.start_row):
             logging.info(f"Processing batch {batch_number}...")
-
-            # 处理当前批次并获取要删除的行
-            # missing_rows = self.process_batch(batch)
-            missing_rows = self.check_duplicate_rows(batch)  # 处理重复行等
-            rows_to_drop = pd.concat([rows_to_drop, missing_rows])
-
-            # 获取文件总行数
-            total_rows = sum(1 for line in open(self.rawdata_file_path))  # 获取文件行数
-            logging.info(f"Total rows in file: {total_rows}")
-                    
-            # 处理批次并获取要删除的行
-            # rows_to_drop = self.process_in_batches()
-            drop_data = self.logical_validation(batch)
-            rows_to_drop = pd.concat([rows_to_drop, drop_data])
     
-            # 删除原始数据中的要删除的行
-            # cleaned_df = self.df[~self.df.index.isin(rows_to_drop.index)]
-            cleaned_batch = batch[~batch.index.isin(rows_to_drop.index)]
+            # 1. 检查缺失值
+            missing_rows = self.check_missing_values(batch)
+            rows_to_drop_indices.update(missing_rows.index)
+    
+            # 2. 检查重复行
+            duplicate_rows = self.check_duplicate_rows(batch)
+            rows_to_drop_indices.update(duplicate_rows.index)
+    
+            # 3. 逻辑验证
+            invalid_rows = self.logical_validation(batch)
+            rows_to_drop_indices.update(invalid_rows.index)
+
+             # 4. 有效值验证
+            invalid_rows = self.validate_data_ranges(batch)
+            rows_to_drop_indices.update(invalid_rows.index)
+
+             # 5. 唯一性验证
+            invalid_rows = self.verify_record_number_unique(batch)
+            rows_to_drop_indices.update(invalid_rows.index)
             
-            # 重置索引
-            # cleaned_df = cleaned_df.reset_index(drop=True)
-            cleaned_batch = cleaned_batch.reset_index(drop=True)
+    
+            # 删除当前批次中的要删除的行
+            cleaned_batch = batch.drop(index=rows_to_drop_indices, errors='ignore').reset_index(drop=True)
     
             # 如果 'record_number' 列存在，重新生成排序
             if 'record_number' in cleaned_batch.columns:
-                cleaned_batch['record_number'] = range(1, len(cleaned_batch) + 1)  # 重新生成从1开始的序号
+                cleaned_batch['record_number'] = range(1, len(cleaned_batch) + 1)
                 logging.info("'record_number' column reset.")
             else:
                 logging.warning("'record_number' column not found. No reset performed.")
     
-             # 每个批次处理后保存到输出文件，追加模式
-            if batch_number == 1:
-                cleaned_batch.to_csv(output_file_path, index=False, mode='w', header=True)
-            else:
-                cleaned_batch.to_csv(output_file_path, index=False, mode='a', header=False)
-    
+            # 保存清理后的批次数据
+            mode = 'w' if batch_number == 1 else 'a'
+            header = batch_number == 1
+            cleaned_batch.to_csv(output_file_path, index=False, mode=mode, header=header)
             
-            # 更新进度
+            logging.info(f"Batch {batch_number} cleaned and saved.")
             self.start_row += len(batch)
             self.save_progress()
-    
             batch_number += 1
     
         logging.info(f"Data cleaning process completed. Total rows processed: {self.start_row}")
-        logging.info(f"Rows to drop: {len(rows_to_drop)}")
+        logging.info(f"Rows to drop: {len(rows_to_drop_indices)}")
         logging.info(f"Cleaned data saved to {output_file_path}")
-
+    
         # 清理进度文件，表示处理已完成
-        os.remove("progress.json")
-        logging.info("Progress file removed. Data processing complete.")
-
-        # 保存清理后的数据
-        # cleaned_df.to_csv(output_file_path, index=False)
-        # logging.info(f"Cleaned data saved to {output_file_path}")
+        if os.path.exists("progress.json"):
+            os.remove("progress.json")
+            logging.info("Progress file removed. Data processing complete.")
+        
+        # 调用验证脚本来验证清理后的数据
+        subprocess.run(['python', 'data_validator.py', output_file_path])
+        logging.info("Data clean code test passed. Congratulations! Result deatils in log/data_cleaning.log")
 
 
 if __name__ == "__main__":
