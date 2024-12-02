@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/cs/home/sz92/Documents/CS5002/P3/code/data_cleaner.py", line 576, in <module>
+    cleaner.check_type_conversion(batch)
+NameError: name 'batch' is not defined

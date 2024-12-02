@@ -1,0 +1,124 @@
+Checking data types:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 63389 entries, 0 to 63388
+Data columns (total 17 columns):
+ #   Column                    Non-Null Count  Dtype 
+---  ------                    --------------  ----- 
+ 0   Record_Number             63389 non-null  int64 
+ 1   Region                    63389 non-null  object
+ 2   RESIDENCE_TYPE            63389 non-null  object
+ 3   Family_Composition        63389 non-null  object
+ 4   sex                       63389 non-null  int64 
+ 5   age                       63389 non-null  int64 
+ 6   Marital_Status            63389 non-null  int64 
+ 7   student                   63389 non-null  int64 
+ 8   Country_Of_Birth          63389 non-null  int64 
+ 9   health                    63389 non-null  int64 
+ 10  Ethnic_Group              63389 non-null  int64 
+ 11  religion                  63389 non-null  int64 
+ 12  Economic_Activity         63389 non-null  object
+ 13  Occupation                63389 non-null  object
+ 14  industry                  63389 non-null  object
+ 15  Hours_Worked_Per_Week     63389 non-null  object
+ 16  Approximate_Social_Grade  63384 non-null  object
+dtypes: int64(9), object(8)
+memory usage: 8.2+ MB
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 63389 entries, 0 to 63388
+Data columns (total 17 columns):
+ #   Column                    Non-Null Count  Dtype 
+---  ------                    --------------  ----- 
+ 0   Record_Number             63389 non-null  int64 
+ 1   Region                    63389 non-null  object
+ 2   RESIDENCE_TYPE            63389 non-null  object
+ 3   Family_Composition        63389 non-null  object
+ 4   sex                       63389 non-null  int64 
+ 5   age                       63389 non-null  int64 
+ 6   Marital_Status            63389 non-null  int64 
+ 7   student                   63389 non-null  int64 
+ 8   Country_Of_Birth          63389 non-null  int64 
+ 9   health                    63389 non-null  int64 
+ 10  Ethnic_Group              63389 non-null  int64 
+ 11  religion                  63389 non-null  int64 
+ 12  Economic_Activity         63389 non-null  object
+ 13  Occupation                63389 non-null  object
+ 14  industry                  63389 non-null  object
+ 15  Hours_Worked_Per_Week     63389 non-null  object
+ 16  Approximate_Social_Grade  63384 non-null  object
+dtypes: int64(9), object(8)
+memory usage: 8.2+ MB
+None
+Missing values detected:
+Record_Number               0
+Region                      0
+RESIDENCE_TYPE              0
+Family_Composition          0
+sex                         0
+age                         0
+Marital_Status              0
+student                     0
+Country_Of_Birth            0
+health                      0
+Ethnic_Group                0
+religion                    0
+Economic_Activity           0
+Occupation                  0
+industry                    0
+Hours_Worked_Per_Week       0
+Approximate_Social_Grade    5
+dtype: int64
+
+Column missing value locations:
+Column 'approximate_social_grade': missing values at indices [1, 27, 29, 42273, 42441]
+
+Rows with missing values:
+Failed! 1 duplicate rows detected.
+
+Duplicate rows:
+Failed! 'record_number' is not unique. Duplicate record numbers: [5]
+Duplicate rows:
+
+Broken records in column 'sex':
+
+Broken records in column 'ethnic_group':
+
+Broken records in column 'approximate_social_grade':
+
+Unique categories and counts per column:
+residence_type: ['P', 'C'] (Total unique: 2)
+family_composition: ['5', '2', '3', '4', 'X', '1', '0'] (Total unique: 7)
+sex: [1, 2, 6] (Total unique: 3)
+age: [1, 2, 3, 4, 5, 6, 7, 8] (Total unique: 8)
+marital_status: [1, 2, 3, 4, 5] (Total unique: 5)
+student: [1, 2] (Total unique: 2)
+country_of_birth: [1, 2] (Total unique: 2)
+health: [1, 2, 3, 4, 5] (Total unique: 5)
+ethnic_group: [1, 2, 3, 4, 5, 6, 9] (Total unique: 7)
+religion: [1, 2, 3, 4, 5, 6, 7, 8, 9] (Total unique: 9)
+economic_activity: ['6', '7', '5', '2', '8', '9', '3', '4', 'X', '1'] (Total unique: 10)
+occupation: ['6', '7', '5', '2', '8', '3', '9', '4', 'X', '1'] (Total unique: 10)
+industry: ['6', '7', '8', '5', '2', '11', '10', '9', '3', '13', '4', 'X', '12', '1'] (Total unique: 14)
+hours_worked_per_week: ['2', '3', '4', 'X', '1'] (Total unique: 5)
+approximate_social_grade: ['2', '11', '3', '4', 'X', '1'] (Total unique: 6)
+
+Category counts across columns:
+P: 62240 occurrences
+C: 1149 occurrences
+1: 334626 occurrences
+0: 11716 occurrences
+4: 57765 occurrences
+2: 220082 occurrences
+5: 36059 occurrences
+3: 61078 occurrences
+X: 85940 occurrences
+6: 19854 occurrences
+7: 14501 occurrences
+8: 16777 occurrences
+9: 15822 occurrences
+11: 6819 occurrences
+10: 4123 occurrences
+12: 1107 occurrences
+13: 1172 occurrences
+Failed! 1 duplicate rows detected.
+
+Duplicate rows:
